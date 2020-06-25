@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "721082673693",
+    "firebase_url": "https://hachimichi-30d03.firebaseio.com",
+    "project_id": "hachimichi-30d03",
+    "storage_bucket": "hachimichi-30d03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721082673693:android:30e22e38530881057374f4",
+        "android_client_info": {
+          "package_name": "ali.naseem.hachimichi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "721082673693-nontcoat2oaaqsebg23pjg9ulru4envk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ali.naseem.hachimichi",
+            "certificate_hash": "457fdea04ae266eb1ea55a81a96470d023bbe9bb"
+          }
+        },
+        {
+          "client_id": "721082673693-q99ugbdiaa1th8q2e7mienphugdru2e0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOOGwzJvW71zDPa_pM5QrbZd2dEPaVwZU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "721082673693-q99ugbdiaa1th8q2e7mienphugdru2e0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

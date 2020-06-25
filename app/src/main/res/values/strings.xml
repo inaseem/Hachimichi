@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Hachimichi</string>
+    <string name="sensor_image_content_description">Sensor image</string>
+    <!--  Activity recognition  -->
+    <string name="activity_recognition">Activity Recognition</string>
+    <string name="activity_recognition_recognized_activity">Recognized activity:</string>
+    <string name="activity_recognition_confidence">Confidence:</string>
+    <string name="activity_recognition_in_vehicle">In vehicle</string>
+    <string name="activity_recognition_on_bicycle">On bicycle</string>
+    <string name="activity_recognition_on_foot">On foot</string>
+    <string name="activity_recognition_running">Running</string>
+    <string name="activity_recognition_still">Still</string>
+    <string name="activity_recognition_tilting">Tilting</string>
+    <string name="activity_recognition_unknown">Unknown</string>
+    <string name="activity_recognition_walking">Walking</string>
+    <string name="acceleration">Acceleration</string>
+    <string name="acceleration_linear">Acceleration linear</string>
+    <string name="cell">Cell</string>
+    <string name="gps">GPS</string>
+    <string name="gps_assisted">GPS Assisted</string>
+    <string name="gravity">Gravity</string>
+    <string name="gyroscope">Gyroscope</string>
+    <string name="gyroscope_uncalibrated">Gyroscope uncalibrated</string>
+    <string name="heart_rate">Heart rate</string>
+    <string name="light">Light</string>
+    <string name="magnetic_field">Magnetic field</string>
+    <string name="magnetic_field_uncalibrated">Magnetic field uncalibrated</string>
+    <string name="orientation">Orientation</string>
+    <string name="pressure">Pressure</string>
+    <string name="proximity">Proximity</string>
+    <string name="relative_humidity">Relative humidity</string>
+    <string name="rotation_vector">Rotation vector</string>
+    <string name="rotation_vector_game">Rotation vector game</string>
+    <string name="rotation_vector_geomagnetic">Rotation vector geomagnetic</string>
+    <string name="significant_motion">Significant motion</string>
+    <string name="step_counter">Step counter</string>
+    <string name="step_detector">Step detector</string>
+    <string name="temperature">Temperature</string>
+    <string name="temperature_ambient">Temperature ambient</string>
+</resources>
