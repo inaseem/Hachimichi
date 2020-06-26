@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:padding="16dp"
     tools:context=".sensor.SensorActivity">
@@ -11,83 +12,228 @@
     <TextView
         android:id="@+id/display"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
-        android:gravity="center"
+        android:gravity="center_vertical"
         android:textSize="16sp" />
 
-    <Button
-        android:id="@+id/accelerator"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Accelerator"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+        android:layout_height="0dp"
+        android:layout_weight="3">
 
-    <Button
-        android:id="@+id/magnetometer"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Magnetometer"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/pressure"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Pressure Sensor"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+            <Button
+                android:id="@+id/accelerator"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Accelerator"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
 
-    <Button
-        android:id="@+id/light"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Light Sensor"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+            <Button
+                android:id="@+id/linear_accelerator"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Linear Accelerator"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
 
-    <Button
-        android:id="@+id/proximity"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Proximity Sensor"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+            <Button
+                android:id="@+id/magnetometer"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Magnetometer"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
 
-    <Button
-        android:id="@+id/gps"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="start|center_vertical"
-        android:text="Location (GPS + Network)"
-        android:textSize="16sp"
-        app:icon="@drawable/proximity"
-        app:iconGravity="end"
-        app:iconSize="24dp" />
+            <Button
+                android:id="@+id/pressure"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Pressure Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/light"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Light Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/proximity"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Proximity Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/gps"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Location (GPS + Network)"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/activity"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Activity Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/motion"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Significant Motion Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/stepCounter"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Step Counter Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/stepDetector"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Step Detector Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/gyroscope"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Gyroscope"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/temperature"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Ambient Temperature Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/humidity"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Relative Humidity Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/gravity"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Gravity Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/rotation"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Rotation Vector Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+            <Button
+                android:id="@+id/heart_rate"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:gravity="start|center_vertical"
+                android:text="Heart Rate Sensor"
+                android:textSize="16sp"
+                app:icon="@drawable/proximity"
+                app:iconGravity="end"
+                app:iconSize="24dp" />
+
+        </LinearLayout>
+    </ScrollView>
 
 
 </LinearLayout>

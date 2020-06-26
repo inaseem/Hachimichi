@@ -73,6 +73,6 @@ public class SliderViewModel extends ViewModel {
             public void run() {
                 handler.post(Update);
             }
-        }, 2500, 5000);
+        }, 5000, 5000);
     }
 }

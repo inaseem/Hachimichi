@@ -1,7 +1,11 @@
 package ali.naseem.hachimichi.sensor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +20,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
@@ -25,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 
 import ali.naseem.hachimichi.R;
 
+@SuppressLint({"SetTextI18n", "DefaultLocale"})
 public class SensorActivity extends AppCompatActivity {
 
     private SensorManager mSensorManager;
@@ -34,6 +41,10 @@ public class SensorActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest mLocationRequest;
     private LocationCallback callback;
+    private ActivityRecognitionClient activityRecognitionClient;
+    private PendingIntent pendingIntent;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +52,7 @@ public class SensorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sensor);
         display = findViewById(R.id.display);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        activityRecognitionClient = ActivityRecognition.getClient(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -57,28 +69,71 @@ public class SensorActivity extends AppCompatActivity {
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
-                    double lat = location.getLatitude();
-                    double lang = location.getLongitude();
-                    double alt = location.getAltitude();
-                    String val = String.format("Lat: %f, Long: %f, Altitude: %f", lat, lang, alt);
-                    show("Location", val, "");
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Accuracy: ").append(location.getAccuracy()).append("\n");
+                    sb.append("Latitude: ").append(location.getLatitude()).append("\n");
+                    sb.append("Longitude: ").append(location.getLongitude()).append("\n");
+                    sb.append("Altitude: ").append(location.getAltitude()).append("\n");
+                    show("Location", sb.toString());
                 }
             }
         };
-        findViewById(R.id.accelerator).setOnClickListener(v -> setAccelerometerListener());
-        findViewById(R.id.magnetometer).setOnClickListener(v -> setMagnetometerListener());
-        findViewById(R.id.pressure).setOnClickListener(v -> setPressureListener());
-        findViewById(R.id.light).setOnClickListener(v -> setLightSensorListener());
-        findViewById(R.id.proximity).setOnClickListener(v -> setProximityListener());
+
+        sharedPref = getSharedPreferences(
+                "hachimichi", Context.MODE_PRIVATE);
+        preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                String keyName = "transition";
+                Toast.makeText(SensorActivity.this, "Data", Toast.LENGTH_SHORT).show();
+                if (key.equals(keyName)) {
+                    String val = sharedPreferences.getString(key, "");
+                    show("Activity", val);
+                }
+            }
+        };
+
+        findViewById(R.id.accelerator).setOnClickListener(v -> setSensorListener(Sensor.TYPE_ACCELEROMETER, PackageManager.FEATURE_SENSOR_ACCELEROMETER, "Accelerometer"));
+        findViewById(R.id.magnetometer).setOnClickListener(v -> setSensorListener(Sensor.TYPE_MAGNETIC_FIELD, PackageManager.FEATURE_SENSOR_COMPASS, "Magnetometer"));
+        findViewById(R.id.pressure).setOnClickListener(v -> setSensorListener(Sensor.TYPE_PRESSURE, PackageManager.FEATURE_SENSOR_BAROMETER, "Pressure Sensor"));
+        findViewById(R.id.light).setOnClickListener(v -> setSensorListener(Sensor.TYPE_LIGHT, PackageManager.FEATURE_SENSOR_LIGHT, "Light Sensor"));
+        findViewById(R.id.proximity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_PROXIMITY, PackageManager.FEATURE_SENSOR_PROXIMITY, "Proximity Sensor"));
         findViewById(R.id.gps).setOnClickListener(v -> setLocationListener());
+        findViewById(R.id.activity).setOnClickListener(v -> setActivityListener());
+        findViewById(R.id.stepCounter).setOnClickListener(v -> setSensorListener(Sensor.TYPE_STEP_COUNTER, PackageManager.FEATURE_SENSOR_STEP_COUNTER, "Step Counter Sensor"));
+        findViewById(R.id.stepDetector).setOnClickListener(v -> setSensorListener(Sensor.TYPE_STEP_DETECTOR, PackageManager.FEATURE_SENSOR_STEP_DETECTOR, "Step Detector Sensor"));
+        findViewById(R.id.temperature).setOnClickListener(v -> setSensorListener(Sensor.TYPE_AMBIENT_TEMPERATURE, PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE, "Ambient Temperature"));
+        findViewById(R.id.humidity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_RELATIVE_HUMIDITY, PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY, "Relative Humidity"));
+        findViewById(R.id.gravity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_GRAVITY, null, "Gravity Sensor"));
+        findViewById(R.id.rotation).setOnClickListener(v -> setSensorListener(Sensor.TYPE_ROTATION_VECTOR, null, "Rotation Vector"));
+        findViewById(R.id.heart_rate).setOnClickListener(v -> setSensorListener(Sensor.TYPE_HEART_RATE, PackageManager.FEATURE_SENSOR_HEART_RATE, "Heart Rate"));
+        findViewById(R.id.gyroscope).setOnClickListener(v -> setSensorListener(Sensor.TYPE_GYROSCOPE, PackageManager.FEATURE_SENSOR_GYROSCOPE, "Gyroscope"));
+        findViewById(R.id.linear_accelerator).setOnClickListener(v -> setSensorListener(Sensor.TYPE_LINEAR_ACCELERATION, null, "Linear Acceleration"));
+        findViewById(R.id.motion).setOnClickListener(v -> setSensorListener(Sensor.TYPE_SIGNIFICANT_MOTION, null, "Significant Motion"));
     }
 
-    private void show(String type, float data, String unit) {
-        display.setText(type + "\nValue: " + data + unit);
+    private void show(String displayName, String data) {
+        display.setText(data);
     }
 
-    private void show(String type, String data, String unit) {
-        display.setText(type + "\nValue: " + data + unit);
+    private boolean available(String feature) {
+        if (feature == null && mSensorManager.getDefaultSensor(sensorType) != null) return true;
+        if (getPackageManager().hasSystemFeature(feature)) return true;
+        Toast.makeText(this, "Sensor Not Available", Toast.LENGTH_SHORT).show();
+        display.setText(null);
+        return false;
+    }
+
+    private void setActivityListener() {
+        unregisterListener();
+        Intent intent = new Intent(this, TransitionRecognitionReceiver.class);
+        intent.setAction(TransitionRecognitionReceiver.ACTION);
+
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
+        sharedPref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
     }
 
     private void setLocationListener() {
@@ -89,116 +144,24 @@ public class SensorActivity extends AppCompatActivity {
         }
 
         fusedLocationClient.requestLocationUpdates(mLocationRequest, callback, Looper.myLooper());
-//        fusedLocationClient.getLastLocation()
-//                .addOnSuccessListener(this, location -> {
-//                    if (location != null) {
-//                        double lat = location.getLatitude();
-//                        double lang = location.getLongitude();
-//                        double alt = location.getAltitude();
-//                        String val = String.format("Lat: %f, Long: %f, Altitude: %f", lat, lang, alt);
-//                        show("Location", val, "");
-//                    }
-//                });
     }
 
-    private void setProximityListener() {
-        sensorType = Sensor.TYPE_PROXIMITY;
+    private void setSensorListener(int sensorType, String featureName, String displayName) {
         unregisterListener();
+        this.sensorType = sensorType;
+        if (!available(featureName)) return;
         listener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-//                    float maxRange = event.sensor.getMaximumRange();
-//                    if (event.values[0] < maxRange) {
-//                        //near
-//                    } else {
-//                        //far
-//                    }
-                    show("Proximity", event.values[0], "");
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-        registerListener();
-    }
-
-    private void setAccelerometerListener() {
-        sensorType = Sensor.TYPE_ACCELEROMETER;
-        unregisterListener();
-        listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                    float x = event.values[0];
-                    float y = event.values[1];
-                    float z = event.values[2];
-                    show("Accelerometer", "X = " + x + " ,Y =  " + y + " ,Z =  " + z, "");
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-        registerListener();
-    }
-
-    private void setMagnetometerListener() {
-        sensorType = Sensor.TYPE_MAGNETIC_FIELD;
-        unregisterListener();
-        listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                    float x = event.values[0];
-                    float y = event.values[1];
-                    float z = event.values[2];
-                    show("Magnetometer", "X = " + x + " ,Y =  " + y + " ,Z =  " + z, "");
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-        registerListener();
-    }
-
-    private void setPressureListener() {
-        sensorType = Sensor.TYPE_PRESSURE;
-        unregisterListener();
-        listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
-                    float val = event.values[0];
-                    show("Pressure", val, "");
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-            }
-        };
-        registerListener();
-    }
-
-    private void setLightSensorListener() {
-        sensorType = Sensor.TYPE_LIGHT;
-        unregisterListener();
-        listener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {
-                if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-                    float val = event.values[0];
-                    show("Light", val, "");
+                if (event.sensor.getType() == sensorType) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(event.sensor.getName()).append("\n\n");
+                    sb.append("Timestamp: ").append(event.timestamp).append("\n");
+                    sb.append("Accuracy: ").append(event.accuracy).append("\n");
+                    for (int i = 0; i < event.values.length; ++i) {
+                        sb.append("Value ").append(i + 1).append(": ").append(event.values[i]).append("\n");
+                    }
+                    show(displayName, sb.toString());
                 }
             }
 
@@ -225,6 +188,12 @@ public class SensorActivity extends AppCompatActivity {
     private void unregisterListener() {
         if (callback != null && fusedLocationClient != null)
             fusedLocationClient.removeLocationUpdates(callback);
+        if (pendingIntent != null)
+            activityRecognitionClient.removeActivityUpdates(pendingIntent).addOnCompleteListener(task -> {
+                pendingIntent.cancel();
+            });
+        if (preferenceChangeListener != null)
+            sharedPref.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         if (listener != null)
             mSensorManager.unregisterListener(listener);
     }
@@ -232,7 +201,7 @@ public class SensorActivity extends AppCompatActivity {
     private void registerListener() {
         if (display != null) display.setText(null);
         if (listener != null)
-            mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(sensorType), SensorManager.SENSOR_DELAY_UI);
+            mSensorManager.registerListener(listener, mSensorManager.getDefaultSensor(sensorType), SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override

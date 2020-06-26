@@ -15,7 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".sensor.SensorActivity"></activity>
+        <activity
+            android:name=".sensor.SensorActivity"
+            android:configChanges="orientation|screenLayout|screenSize" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".sensor.MainActivity" />
+
+        <receiver
+            android:name=".sensor.TransitionRecognitionReceiver"
+            android:exported="false"
+            android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
+            <intent-filter>
+                <action android:name="ali.naseem.hachimichi.INTENT_ACTION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
