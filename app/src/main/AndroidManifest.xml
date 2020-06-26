@@ -27,7 +27,7 @@
         </activity>
 
         <receiver
-            android:name=".sensor.TransitionRecognitionReceiver"
+            android:name=".sensor.ActivityRecognitionReceiver"
             android:exported="false"
             android:permission="com.google.android.gms.permission.ACTIVITY_RECOGNITION">
             <intent-filter>

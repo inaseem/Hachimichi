@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -29,6 +28,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import ali.naseem.hachimichi.R;
 
 @SuppressLint({"SetTextI18n", "DefaultLocale"})
@@ -43,8 +45,8 @@ public class SensorActivity extends AppCompatActivity {
     private LocationCallback callback;
     private ActivityRecognitionClient activityRecognitionClient;
     private PendingIntent pendingIntent;
-    private SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener;
-    private SharedPreferences sharedPref;
+    public static final String ACTION = "ali.naseem.hachimichi.INTENT_ACTION";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,21 +76,7 @@ public class SensorActivity extends AppCompatActivity {
                     sb.append("Latitude: ").append(location.getLatitude()).append("\n");
                     sb.append("Longitude: ").append(location.getLongitude()).append("\n");
                     sb.append("Altitude: ").append(location.getAltitude()).append("\n");
-                    show("Location", sb.toString());
-                }
-            }
-        };
-
-        sharedPref = getSharedPreferences(
-                "hachimichi", Context.MODE_PRIVATE);
-        preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                String keyName = "transition";
-                Toast.makeText(SensorActivity.this, "Data", Toast.LENGTH_SHORT).show();
-                if (key.equals(keyName)) {
-                    String val = sharedPreferences.getString(key, "");
-                    show("Activity", val);
+                    show("Location (GPS+NETWORK)", sb.toString());
                 }
             }
         };
@@ -109,11 +97,13 @@ public class SensorActivity extends AppCompatActivity {
         findViewById(R.id.heart_rate).setOnClickListener(v -> setSensorListener(Sensor.TYPE_HEART_RATE, PackageManager.FEATURE_SENSOR_HEART_RATE, "Heart Rate"));
         findViewById(R.id.gyroscope).setOnClickListener(v -> setSensorListener(Sensor.TYPE_GYROSCOPE, PackageManager.FEATURE_SENSOR_GYROSCOPE, "Gyroscope"));
         findViewById(R.id.linear_accelerator).setOnClickListener(v -> setSensorListener(Sensor.TYPE_LINEAR_ACCELERATION, null, "Linear Acceleration"));
-        findViewById(R.id.motion).setOnClickListener(v -> setSensorListener(Sensor.TYPE_SIGNIFICANT_MOTION, null, "Significant Motion"));
+        findViewById(R.id.motion).setOnClickListener(v -> setSensorListener(Sensor.TYPE_SIGNIFICANT_MOTION, null, null));
     }
 
     private void show(String displayName, String data) {
-        display.setText(data);
+        if (displayName != null)
+            display.setText(displayName + "\n\n" + data);
+        else display.setText(data);
     }
 
     private boolean available(String feature) {
@@ -126,14 +116,18 @@ public class SensorActivity extends AppCompatActivity {
 
     private void setActivityListener() {
         unregisterListener();
-        Intent intent = new Intent(this, TransitionRecognitionReceiver.class);
-        intent.setAction(TransitionRecognitionReceiver.ACTION);
+        Intent intent = new Intent(this, ActivityRecognitionReceiver.class);
+        intent.setAction(ActivityRecognitionReceiver.ACTION);
 
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-
         activityRecognitionClient.requestActivityUpdates(3000, pendingIntent);
-        sharedPref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe
+    public void onNewActivity(OnReceiveActivity activity) {
+        show("Activity Recognition", activity.getName());
     }
 
     private void setLocationListener() {
@@ -155,13 +149,12 @@ public class SensorActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent event) {
                 if (event.sensor.getType() == sensorType) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append(event.sensor.getName()).append("\n\n");
                     sb.append("Timestamp: ").append(event.timestamp).append("\n");
                     sb.append("Accuracy: ").append(event.accuracy).append("\n");
                     for (int i = 0; i < event.values.length; ++i) {
                         sb.append("Value ").append(i + 1).append(": ").append(event.values[i]).append("\n");
                     }
-                    show(displayName, sb.toString());
+                    show(event.sensor.getName(), sb.toString());
                 }
             }
 
@@ -191,9 +184,8 @@ public class SensorActivity extends AppCompatActivity {
         if (pendingIntent != null)
             activityRecognitionClient.removeActivityUpdates(pendingIntent).addOnCompleteListener(task -> {
                 pendingIntent.cancel();
+                EventBus.getDefault().unregister(this);
             });
-        if (preferenceChangeListener != null)
-            sharedPref.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         if (listener != null)
             mSensorManager.unregisterListener(listener);
     }

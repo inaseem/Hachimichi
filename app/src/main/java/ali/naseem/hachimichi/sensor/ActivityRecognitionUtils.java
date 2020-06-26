@@ -2,7 +2,7 @@ package ali.naseem.hachimichi.sensor;
 
 import com.google.android.gms.location.DetectedActivity;
 
-public class TransitionRecognitionUtils {
+public class ActivityRecognitionUtils {
 
     public static String createTransitionString(DetectedActivity activity) {
         String theActivity = toActivityString(activity.getType());

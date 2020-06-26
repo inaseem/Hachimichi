@@ -66,7 +66,7 @@ public class SliderFragment extends Fragment {
                 mViewModel.startTimer(items.size());
             }
         });
-//        mViewModel.loadImages();
+        mViewModel.loadImages();
         mViewModel.getCurrentPage().observe(getViewLifecycleOwner(), integer -> {
             mPager.setCurrentItem(integer, true);
         });
