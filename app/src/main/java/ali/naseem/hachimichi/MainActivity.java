@@ -1,7 +1,7 @@
 package ali.naseem.hachimichi;
 
+import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -38,14 +38,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void requestPermissions() {
-        int result = ActivityCompat.checkSelfPermission(this, "com.google.android.gms.permission.ACTIVITY_RECOGNITION");
-        if (result != PackageManager.PERMISSION_GRANTED)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{
-                                "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
-                                "android.permission.ACTIVITY_RECOGNITION"}, 102);
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            "com.google.android.gms.permission.ACTIVITY_RECOGNITION",
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.ACTIVITY_RECOGNITION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+        }
     }
 
 }

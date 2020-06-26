@@ -1,6 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/sensor_recycler_view"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical" />
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".sensor.SensorActivity">
+
+    <TextView
+        android:id="@+id/display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/accelerator"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Accelerator"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+    <Button
+        android:id="@+id/magnetometer"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Magnetometer"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+    <Button
+        android:id="@+id/pressure"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Pressure Sensor"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+    <Button
+        android:id="@+id/light"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Light Sensor"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+    <Button
+        android:id="@+id/proximity"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Proximity Sensor"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+    <Button
+        android:id="@+id/gps"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="start|center_vertical"
+        android:text="Location (GPS + Network)"
+        android:textSize="16sp"
+        app:icon="@drawable/proximity"
+        app:iconGravity="end"
+        app:iconSize="24dp" />
+
+
+</LinearLayout>
