@@ -7,9 +7,7 @@
 - Events are transported using EventBus(Pub/Sub)
 - Most of the Sensors have been added
 
-<img src="./images/main.jpeg" alt="main" width="200"/>
-&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="./images/sensors.jpeg" alt="sensors" width="200"/>
+<img src="./images/main.jpeg" alt="main" width="200"/> &nbsp;&nbsp; <img src="./images/sensors.jpeg" alt="sensors" width="200"/>
 
 ### Technologies Used:
 - Firebase Storage and Authentication(Dummy User) Client Library
