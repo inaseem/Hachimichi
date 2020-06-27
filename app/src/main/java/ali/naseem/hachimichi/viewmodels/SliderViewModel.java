@@ -55,16 +55,12 @@ public class SliderViewModel extends ViewModel {
     public void startTimer(int size) {
         final Handler handler = new Handler();
         final Runnable Update = () -> {
-            try {
-                if (size > 0) {
-                    int val = currentPage.getValue() == null ? 0 : currentPage.getValue() + 1;
-                    if (val >= size) {
-                        val = 0;
-                    }
-                    currentPage.setValue(val);
+            if (size > 0) {
+                int val = currentPage.getValue() == null ? 0 : currentPage.getValue() + 1;
+                if (val >= size) {
+                    val = 0;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                currentPage.setValue(val);
             }
         };
         Timer swipeTimer = new Timer();

@@ -39,13 +39,13 @@ public class SensorActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private int sensorType;
     private SensorEventListener listener;
-    private TextView display;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest mLocationRequest;
     private LocationCallback callback;
     private ActivityRecognitionClient activityRecognitionClient;
     private PendingIntent pendingIntent;
     public static final String ACTION = "ali.naseem.hachimichi.INTENT_ACTION";
+    private TextView display;
 
 
     @Override
@@ -71,33 +71,43 @@ public class SensorActivity extends AppCompatActivity {
                 super.onLocationResult(locationResult);
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Accuracy: ").append(location.getAccuracy()).append("\n");
-                    sb.append("Latitude: ").append(location.getLatitude()).append("\n");
-                    sb.append("Longitude: ").append(location.getLongitude()).append("\n");
-                    sb.append("Altitude: ").append(location.getAltitude()).append("\n");
-                    show("Location (GPS+NETWORK)", sb.toString());
+                    String sb = "Accuracy: " + location.getAccuracy() + "\n" +
+                            "Latitude: " + location.getLatitude() + "\n" +
+                            "Longitude: " + location.getLongitude() + "\n" +
+                            "Altitude: " + location.getAltitude() + "\n";
+                    show("Location (GPS+NETWORK)", sb);
                 }
             }
         };
 
-        findViewById(R.id.accelerator).setOnClickListener(v -> setSensorListener(Sensor.TYPE_ACCELEROMETER, PackageManager.FEATURE_SENSOR_ACCELEROMETER, "Accelerometer"));
-        findViewById(R.id.magnetometer).setOnClickListener(v -> setSensorListener(Sensor.TYPE_MAGNETIC_FIELD, PackageManager.FEATURE_SENSOR_COMPASS, "Magnetometer"));
-        findViewById(R.id.pressure).setOnClickListener(v -> setSensorListener(Sensor.TYPE_PRESSURE, PackageManager.FEATURE_SENSOR_BAROMETER, "Pressure Sensor"));
-        findViewById(R.id.light).setOnClickListener(v -> setSensorListener(Sensor.TYPE_LIGHT, PackageManager.FEATURE_SENSOR_LIGHT, "Light Sensor"));
-        findViewById(R.id.proximity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_PROXIMITY, PackageManager.FEATURE_SENSOR_PROXIMITY, "Proximity Sensor"));
+        Object[][] mapping = new Object[][]{
+                {R.id.accelerator, Sensor.TYPE_ACCELEROMETER, PackageManager.FEATURE_SENSOR_ACCELEROMETER, "Accelerometer"},
+                {R.id.magnetometer, Sensor.TYPE_MAGNETIC_FIELD, PackageManager.FEATURE_SENSOR_COMPASS, "Magnetometer"},
+                {R.id.pressure, Sensor.TYPE_PRESSURE, PackageManager.FEATURE_SENSOR_BAROMETER, "Pressure Sensor"},
+                {R.id.light, Sensor.TYPE_LIGHT, PackageManager.FEATURE_SENSOR_LIGHT, "Light Sensor"},
+                {R.id.proximity, Sensor.TYPE_PROXIMITY, PackageManager.FEATURE_SENSOR_PROXIMITY, "Proximity Sensor"},
+                {R.id.stepCounter, Sensor.TYPE_STEP_COUNTER, PackageManager.FEATURE_SENSOR_STEP_COUNTER, "Step Counter Sensor"},
+                {R.id.stepDetector, Sensor.TYPE_STEP_DETECTOR, PackageManager.FEATURE_SENSOR_STEP_DETECTOR, "Step Detector Sensor"},
+                {R.id.temperature, Sensor.TYPE_AMBIENT_TEMPERATURE, PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE, "Ambient Temperature"},
+                {R.id.humidity, Sensor.TYPE_RELATIVE_HUMIDITY, PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY, "Relative Humidity"},
+                {R.id.gravity, Sensor.TYPE_GRAVITY, null, "Gravity Sensor"},
+                {R.id.rotation, Sensor.TYPE_ROTATION_VECTOR, null, "Rotation Vector"},
+                {R.id.heart_rate, Sensor.TYPE_HEART_RATE, PackageManager.FEATURE_SENSOR_HEART_RATE, "Heart Rate"},
+                {R.id.gyroscope, Sensor.TYPE_GYROSCOPE, PackageManager.FEATURE_SENSOR_GYROSCOPE, "Gyroscope"},
+                {R.id.linear_accelerator, Sensor.TYPE_LINEAR_ACCELERATION, null, "Linear Acceleration"},
+                {R.id.motion, Sensor.TYPE_SIGNIFICANT_MOTION, null, null}
+        };
+        for (Object[] objects : mapping) {
+            int viewId = (Integer) objects[0];
+            int sensorType = (Integer) objects[1];
+            String featureName = objects[2] == null ? null : (String) objects[2];
+            String displayName = objects[3] == null ? null : (String) objects[3];
+            findViewById(viewId).setOnClickListener(v -> setSensorListener(sensorType, featureName, displayName));
+        }
+
         findViewById(R.id.gps).setOnClickListener(v -> setLocationListener());
         findViewById(R.id.activity).setOnClickListener(v -> setActivityListener());
-        findViewById(R.id.stepCounter).setOnClickListener(v -> setSensorListener(Sensor.TYPE_STEP_COUNTER, PackageManager.FEATURE_SENSOR_STEP_COUNTER, "Step Counter Sensor"));
-        findViewById(R.id.stepDetector).setOnClickListener(v -> setSensorListener(Sensor.TYPE_STEP_DETECTOR, PackageManager.FEATURE_SENSOR_STEP_DETECTOR, "Step Detector Sensor"));
-        findViewById(R.id.temperature).setOnClickListener(v -> setSensorListener(Sensor.TYPE_AMBIENT_TEMPERATURE, PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE, "Ambient Temperature"));
-        findViewById(R.id.humidity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_RELATIVE_HUMIDITY, PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY, "Relative Humidity"));
-        findViewById(R.id.gravity).setOnClickListener(v -> setSensorListener(Sensor.TYPE_GRAVITY, null, "Gravity Sensor"));
-        findViewById(R.id.rotation).setOnClickListener(v -> setSensorListener(Sensor.TYPE_ROTATION_VECTOR, null, "Rotation Vector"));
-        findViewById(R.id.heart_rate).setOnClickListener(v -> setSensorListener(Sensor.TYPE_HEART_RATE, PackageManager.FEATURE_SENSOR_HEART_RATE, "Heart Rate"));
-        findViewById(R.id.gyroscope).setOnClickListener(v -> setSensorListener(Sensor.TYPE_GYROSCOPE, PackageManager.FEATURE_SENSOR_GYROSCOPE, "Gyroscope"));
-        findViewById(R.id.linear_accelerator).setOnClickListener(v -> setSensorListener(Sensor.TYPE_LINEAR_ACCELERATION, null, "Linear Acceleration"));
-        findViewById(R.id.motion).setOnClickListener(v -> setSensorListener(Sensor.TYPE_SIGNIFICANT_MOTION, null, null));
+
     }
 
     private void show(String displayName, String data) {
@@ -166,18 +176,6 @@ public class SensorActivity extends AppCompatActivity {
         registerListener();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerListener();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterListener();
-    }
-
     private void unregisterListener() {
         if (callback != null && fusedLocationClient != null)
             fusedLocationClient.removeLocationUpdates(callback);
@@ -188,6 +186,18 @@ public class SensorActivity extends AppCompatActivity {
             });
         if (listener != null)
             mSensorManager.unregisterListener(listener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerListener();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterListener();
     }
 
     private void registerListener() {
